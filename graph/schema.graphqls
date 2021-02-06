@@ -2,13 +2,20 @@ type Book {
     id: ID!
     title: String!
     description: String!
+    descriptionTrimmed: String!
     pages: Int!
     language: String!
+    rating: Int!
+    reviews: Int!
     authors: [Author]
     publishers: [Publisher]
+    topics: [Topic]
+    coverURL: String
     url: String!
+    issuedAt: Time!
     createdAt: Time!
     updatedAt: Time!
+    type: String!
 }
 
 type Author {
@@ -26,6 +33,16 @@ type Publisher {
     name: String!
     headquarter: String!
     description: String!
+    createdAt: Time!
+    updatedAt: Time!
+    books: [Book]
+}
+
+type Topic {
+    id: ID!
+    name: String!
+    slug: String!
+    score: Int
     createdAt: Time!
     updatedAt: Time!
     books: [Book]
