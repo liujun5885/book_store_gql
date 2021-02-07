@@ -68,3 +68,7 @@ models:
     fields:
       books:
         resolver: true
+  Topic:
+    fields:
+      books:
+        resolver: true

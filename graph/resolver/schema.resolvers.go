@@ -43,6 +43,10 @@ func (r *queryResolver) FetchCurrentUser(ctx context.Context) (*model.User, erro
 	panic(fmt.Errorf("not implemented"))
 }
 
+func (r *topicResolver) Books(ctx context.Context, obj *model.Topic) ([]*model.Book, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 // Author returns generated.AuthorResolver implementation.
 func (r *Resolver) Author() generated.AuthorResolver { return &authorResolver{r} }
 
@@ -58,8 +62,12 @@ func (r *Resolver) Publisher() generated.PublisherResolver { return &publisherRe
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
+// Topic returns generated.TopicResolver implementation.
+func (r *Resolver) Topic() generated.TopicResolver { return &topicResolver{r} }
+
 type authorResolver struct{ *Resolver }
 type bookResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type publisherResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type topicResolver struct{ *Resolver }

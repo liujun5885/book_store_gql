@@ -41,6 +41,7 @@ type ResolverRoot interface {
 	Mutation() MutationResolver
 	Publisher() PublisherResolver
 	Query() QueryResolver
+	Topic() TopicResolver
 }
 
 type DirectiveRoot struct {
@@ -153,6 +154,9 @@ type PublisherResolver interface {
 type QueryResolver interface {
 	SearchBooks(ctx context.Context, keyword string) ([]*model.Book, error)
 	FetchCurrentUser(ctx context.Context) (*model.User, error)
+}
+type TopicResolver interface {
+	Books(ctx context.Context, obj *model.Topic) ([]*model.Book, error)
 }
 
 type executableSchema struct {
@@ -2648,14 +2652,14 @@ func (ec *executionContext) _Topic_books(ctx context.Context, field graphql.Coll
 		Object:     "Topic",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Books, nil
+		return ec.resolvers.Topic().Books(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4558,32 +4562,41 @@ func (ec *executionContext) _Topic(ctx context.Context, sel ast.SelectionSet, ob
 		case "id":
 			out.Values[i] = ec._Topic_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "name":
 			out.Values[i] = ec._Topic_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "slug":
 			out.Values[i] = ec._Topic_slug(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "score":
 			out.Values[i] = ec._Topic_score(ctx, field, obj)
 		case "createdAt":
 			out.Values[i] = ec._Topic_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "updatedAt":
 			out.Values[i] = ec._Topic_updatedAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "books":
-			out.Values[i] = ec._Topic_books(ctx, field, obj)
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Topic_books(ctx, field, obj)
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
