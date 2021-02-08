@@ -1,5 +1,7 @@
 package main
 
+//go:generate go run github.com/99designs/gqlgen
+
 import (
 	"log"
 	"net/http"
