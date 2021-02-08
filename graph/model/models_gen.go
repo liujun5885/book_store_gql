@@ -93,6 +93,7 @@ type Topic struct {
 type User struct {
 	ID          string     `json:"id"`
 	Email       string     `json:"email"`
+	Password    string     `json:"-"`
 	PhoneNumber string     `json:"phoneNumber"`
 	FirstName   string     `json:"firstName"`
 	LastName    string     `json:"lastName"`
