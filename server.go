@@ -5,6 +5,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/liujun5885/book_store_gql/graph/dataloader"
 	"log"
 	"net/http"
 	"os"
@@ -88,7 +89,7 @@ func main() {
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(config))
 
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	router.Handle("/query", resolver.DataLoaderMiddleware(assetConn, srv))
+	router.Handle("/query", dataloader.DataLoader(assetConn, srv))
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))
