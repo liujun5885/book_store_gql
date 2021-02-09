@@ -6,17 +6,19 @@ package resolver
 import (
 	"context"
 	"fmt"
+	"github.com/liujun5885/book_store_gql/middleware"
 
+	"github.com/liujun5885/book_store_gql/graph/dataloader"
 	"github.com/liujun5885/book_store_gql/graph/generated"
 	"github.com/liujun5885/book_store_gql/graph/model"
 )
 
 func (r *bookResolver) Authors(ctx context.Context, obj *model.Book) ([]*model.Author, error) {
-	panic(fmt.Errorf("not implemented"))
+	return dataloader.GetAuthorLoader(ctx).Load(obj.ID)
 }
 
 func (r *bookResolver) Publishers(ctx context.Context, obj *model.Book) ([]*model.Publisher, error) {
-	panic(fmt.Errorf("not implemented"))
+	return dataloader.GetPublisherLoader(ctx).Load(obj.ID)
 }
 
 func (r *bookResolver) Topics(ctx context.Context, obj *model.Book) ([]*model.Topic, error) {
@@ -24,7 +26,10 @@ func (r *bookResolver) Topics(ctx context.Context, obj *model.Book) ([]*model.To
 }
 
 func (r *rootQueryResolver) SearchBooks(ctx context.Context, keyword string) ([]*model.Book, error) {
-	panic(fmt.Errorf("not implemented"))
+	if _, err := middleware.GetUserFromCTX(ctx); err != nil {
+		return nil, err
+	}
+	return r.ORMBooks.SearchBooks(keyword)
 }
 
 // Book returns generated.BookResolver implementation.
