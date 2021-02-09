@@ -143,6 +143,7 @@ type AuthorResolver interface {
 type BookResolver interface {
 	Authors(ctx context.Context, obj *model.Book) ([]*model.Author, error)
 	Publishers(ctx context.Context, obj *model.Book) ([]*model.Publisher, error)
+	Topics(ctx context.Context, obj *model.Book) ([]*model.Topic, error)
 }
 type PublisherResolver interface {
 	Books(ctx context.Context, obj *model.Publisher) ([]*model.Book, error)
@@ -1558,14 +1559,14 @@ func (ec *executionContext) _Book_topics(ctx context.Context, field graphql.Coll
 		Object:     "Book",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Topics, nil
+		return ec.resolvers.Book().Topics(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4314,7 +4315,16 @@ func (ec *executionContext) _Book(ctx context.Context, sel ast.SelectionSet, obj
 				return res
 			})
 		case "topics":
-			out.Values[i] = ec._Book_topics(ctx, field, obj)
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Book_topics(ctx, field, obj)
+				return res
+			})
 		case "coverURL":
 			out.Values[i] = ec._Book_coverURL(ctx, field, obj)
 		case "url":

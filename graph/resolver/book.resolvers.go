@@ -19,6 +19,10 @@ func (r *bookResolver) Publishers(ctx context.Context, obj *model.Book) ([]*mode
 	panic(fmt.Errorf("not implemented"))
 }
 
+func (r *bookResolver) Topics(ctx context.Context, obj *model.Book) ([]*model.Topic, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *rootQueryResolver) SearchBooks(ctx context.Context, keyword string) ([]*model.Book, error) {
 	panic(fmt.Errorf("not implemented"))
 }
