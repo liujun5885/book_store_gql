@@ -6,11 +6,11 @@ package resolver
 import (
 	"context"
 	"fmt"
-	"github.com/liujun5885/book_store_gql/middleware"
 
 	"github.com/liujun5885/book_store_gql/graph/dataloader"
 	"github.com/liujun5885/book_store_gql/graph/generated"
 	"github.com/liujun5885/book_store_gql/graph/model"
+	"github.com/liujun5885/book_store_gql/middleware"
 )
 
 func (r *bookResolver) Authors(ctx context.Context, obj *model.Book) ([]*model.Author, error) {

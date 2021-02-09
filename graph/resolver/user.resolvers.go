@@ -7,9 +7,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/liujun5885/book_store_gql/middleware"
 
 	"github.com/liujun5885/book_store_gql/graph/model"
+	"github.com/liujun5885/book_store_gql/middleware"
 )
 
 func (r *rootMutationResolver) Register(ctx context.Context, input model.RegisterInput) (*model.RegisterResponse, error) {
