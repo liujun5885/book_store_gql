@@ -75,3 +75,38 @@ type Author struct {
 ```
 
 > you can also put modified model in other files, but should be under package `model`. for example, put it into `auth.model.go`
+
+## add dataloader
+
+### run following command to generate code
+
+```bash
+go run github.com/vektah/dataloaden AuthorLoader string "[]*github.com/liujun5885/book_store_gql/graph/model.Author"
+```
+
+### it will generate the file `authorloader_gen.go`
+
+### put file `authorloader_gen.go` in folder `graph/dataloader`
+
+### In the future, if you want to generate any dataloader please also put into folder `graph/dataloader`
+
+### in file `graph/dataloader/dataloader.go`, it's the implementation of querying data from DB, for example:
+
+```go
+package dataloader
+
+func DataLoader(db *pg.DB, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		loaders := map[string]interface{}{
+			// Put all dataloader in this mapping
+			authorLoaderKey:    BuildAuthorLoader(db),
+			publisherLoaderKey: BuildPublisherLoader(db),
+		}
+		ctx := request.Context()
+		for k, v := range loaders {
+			ctx = context.WithValue(ctx, k, v)
+		}
+		next.ServeHTTP(writer, request.WithContext(ctx))
+	})
+}
+```
