@@ -52,6 +52,19 @@ type Publisher struct {
 	BookPublisher *BookPublisher `json:"-"`
 }
 
+type Topic struct {
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	Slug      string    `json:"slug"`
+	Score     *int      `json:"score"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+
+	// customized fields
+	//Books     []*Book   `json:"books"`
+	BookTopic *BookTopic `json:"-"`
+}
+
 type Book struct {
 	ID                 string    `json:"id"`
 	Title              string    `json:"title"`

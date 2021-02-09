@@ -40,16 +40,6 @@ type RegisterResponse struct {
 	User      *User        `json:"user"`
 }
 
-type Topic struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	Slug      string    `json:"slug"`
-	Score     *int      `json:"score"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
-	Books     []*Book   `json:"books"`
-}
-
 type LoginCode string
 
 const (
