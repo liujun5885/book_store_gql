@@ -1,0 +1,10 @@
+# import
+type Publisher {
+    id: ID!
+    name: String!
+    headquarter: String!
+    description: String!
+    createdAt: Time!
+    updatedAt: Time!
+    books: [Book]
+}

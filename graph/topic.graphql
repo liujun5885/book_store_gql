@@ -1,0 +1,9 @@
+type Topic {
+    id: ID!
+    name: String!
+    slug: String!
+    score: Int
+    createdAt: Time!
+    updatedAt: Time!
+    books: [Book]
+}

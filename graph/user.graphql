@@ -1,0 +1,61 @@
+extend type RootQuery {
+    fetchCurrentUser: User
+}
+
+extend type RootMutation {
+    register(input: RegisterInput!): RegisterResponse
+    login(input: LoginInput!): LoginResponse
+}
+
+type AuthToken {
+    accessToken: String!
+    expiration: Time!
+}
+
+enum RegisterCode {
+    Succeeded
+    Failed
+}
+
+enum LoginCode {
+    Succeeded
+    InvalidPassword
+    InvalidEmail
+}
+
+type RegisterResponse {
+    code: RegisterCode!
+    authToken: AuthToken
+    user: User
+}
+
+type LoginResponse {
+    authToken: AuthToken
+    code: LoginCode!
+    user: User
+}
+
+type User {
+    id: ID!
+    email: String!
+    phoneNumber: String!
+    firstName: String!
+    lastName: String!
+    verified: Boolean!
+    createdAt: Time!
+    lastLogin: Time
+}
+
+input RegisterInput {
+    email: String!
+    password: String!
+    phoneNumber: String
+    username: String
+    firstName: String
+    lastName: String
+}
+
+input LoginInput {
+    email: String!
+    password: String!
+}

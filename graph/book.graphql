@@ -1,0 +1,23 @@
+extend type RootQuery {
+    searchBooks(keyword: String!): [Book]
+}
+
+type Book {
+    id: ID!
+    title: String!
+    description: String!
+    descriptionTrimmed: String!
+    pages: Int!
+    language: String!
+    rating: Int!
+    reviews: Int!
+    authors: [Author]
+    publishers: [Publisher]
+    topics: [Topic]
+    coverURL: String
+    url: String!
+    issuedAt: Time!
+    createdAt: Time!
+    updatedAt: Time!
+    type: String!
+}

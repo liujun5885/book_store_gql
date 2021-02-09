@@ -14,6 +14,36 @@ type AuthToken struct {
 	Expiration  time.Time `json:"expiration"`
 }
 
+type Author struct {
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Nationality string    `json:"nationality"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+	Books       []*Book   `json:"books"`
+}
+
+type Book struct {
+	ID                 string       `json:"id"`
+	Title              string       `json:"title"`
+	Description        string       `json:"description"`
+	DescriptionTrimmed string       `json:"descriptionTrimmed"`
+	Pages              int          `json:"pages"`
+	Language           string       `json:"language"`
+	Rating             int          `json:"rating"`
+	Reviews            int          `json:"reviews"`
+	Authors            []*Author    `json:"authors"`
+	Publishers         []*Publisher `json:"publishers"`
+	Topics             []*Topic     `json:"topics"`
+	CoverURL           *string      `json:"coverURL"`
+	URL                string       `json:"url"`
+	IssuedAt           time.Time    `json:"issuedAt"`
+	CreatedAt          time.Time    `json:"createdAt"`
+	UpdatedAt          time.Time    `json:"updatedAt"`
+	Type               string       `json:"type"`
+}
+
 type LoginInput struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -23,6 +53,16 @@ type LoginResponse struct {
 	AuthToken *AuthToken `json:"authToken"`
 	Code      LoginCode  `json:"code"`
 	User      *User      `json:"user"`
+}
+
+type Publisher struct {
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Headquarter string    `json:"headquarter"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+	Books       []*Book   `json:"books"`
 }
 
 type RegisterInput struct {
@@ -48,6 +88,17 @@ type Topic struct {
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 	Books     []*Book   `json:"books"`
+}
+
+type User struct {
+	ID          string     `json:"id"`
+	Email       string     `json:"email"`
+	PhoneNumber string     `json:"phoneNumber"`
+	FirstName   string     `json:"firstName"`
+	LastName    string     `json:"lastName"`
+	Verified    bool       `json:"verified"`
+	CreatedAt   time.Time  `json:"createdAt"`
+	LastLogin   *time.Time `json:"lastLogin"`
 }
 
 type LoginCode string

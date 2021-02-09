@@ -1,0 +1,9 @@
+schema {
+    query: RootQuery
+    mutation: RootMutation
+}
+
+scalar Time
+
+type RootQuery
+type RootMutation
