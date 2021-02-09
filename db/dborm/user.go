@@ -83,11 +83,11 @@ func (u *User) CreateUser(email, password, phoneNumber, firstName, lastName *str
 
 func (u *User) Login(email, password string) (*model.User, error) {
 	user := &model.User{}
-	if err := u.DB.Model(user).Where("email = ?", email).Select(); err != nil {
-		return nil, err
-	}
-	if user.ID == "" {
+	err := u.DB.Model(user).Where("email = ?", email).Select()
+	if err == pg.ErrNoRows {
 		return nil, errors.New(fmt.Sprintf("user %s does not exist", email))
+	} else if err != nil {
+		return nil, err
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return nil, errors.New(fmt.Sprintf("invalid password"))
