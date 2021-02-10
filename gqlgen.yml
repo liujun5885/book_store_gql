@@ -61,6 +61,8 @@ models:
         resolver: true
       publishers:
         resolver: true
+      topics:
+        resolver: true
   Author:
     fields:
       books:
