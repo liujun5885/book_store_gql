@@ -41,7 +41,7 @@ type Author struct {
 
 	// customized fields
 	//Books       []*Book    `json:"books"`
-	BookAuthor *BookAuthor `json:"-"`
+	BookAuthor *BookAuthor `json:"-" pg:"-"`
 }
 
 type Publisher struct {
@@ -54,7 +54,7 @@ type Publisher struct {
 
 	// customized fields
 	//Books       []*Book   `json:"books"`
-	BookPublisher *BookPublisher `json:"-"`
+	BookPublisher *BookPublisher `json:"-" pg:"-"`
 }
 
 type Topic struct {
@@ -67,7 +67,7 @@ type Topic struct {
 
 	// customized fields
 	//Books     []*Book   `json:"books"`
-	BookTopic *BookTopic `json:"-"`
+	BookTopic *BookTopic `json:"-" pg:"-"`
 }
 
 type Book struct {
@@ -90,9 +90,9 @@ type Book struct {
 	//Authors            []*Author    `json:"authors"`
 	//Publishers         []*Publisher `json:"publishers"`
 	//Topics             []*Topic     `json:"topics"`
-	BookAuthor    *BookAuthor    `json:"-"`
-	BookPublisher *BookPublisher `json:"-"`
-	BookTopic     *BookTopic     `json:"-"`
+	BookAuthor    *BookAuthor    `json:"-" pg:"-"`
+	BookPublisher *BookPublisher `json:"-" pg:"-"`
+	BookTopic     *BookTopic     `json:"-" pg:"-"`
 }
 
 type User struct {
