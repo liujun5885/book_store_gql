@@ -8,6 +8,11 @@ import (
 	"github.com/liujun5885/book_store_gql/constants"
 )
 
+/*
+	The following is the DB and Model mapping doc:
+	https://pg.uptrace.dev/models/
+*/
+
 type BookAuthor struct {
 	BookID    string     `json:"book_id"`
 	AuthorID  string     `json:"author_id"`
@@ -69,17 +74,17 @@ type Book struct {
 	ID                 string    `json:"id"`
 	Title              string    `json:"title"`
 	Description        string    `json:"description"`
-	DescriptionTrimmed string    `json:"descriptionTrimmed"`
+	DescriptionTrimmed string    `json:"descriptionTrimmed" pg:"-"`
 	Pages              int       `json:"pages"`
 	Language           string    `json:"language"`
 	Rating             int       `json:"rating"`
 	Reviews            int       `json:"reviews"`
-	CoverURL           *string   `json:"coverURL"`
+	CoverURL           *string   `json:"coverURL" pg:"-"`
 	URL                string    `json:"url"`
 	IssuedAt           time.Time `json:"issuedAt"`
 	CreatedAt          time.Time `json:"createdAt"`
 	UpdatedAt          time.Time `json:"updatedAt"`
-	Type               string    `json:"type"`
+	Type               string    `json:"type" pg:"-"`
 
 	// customized fields
 	//Authors            []*Author    `json:"authors"`

@@ -1,5 +1,9 @@
 # book_store_gql
 
+## Prerequisite
+- go-pg package: https://pg.uptrace.dev/
+- gqlgen, the tool we are using to generate graphql server code: https://gqlgen.com/getting-started/
+
 ## Init repo. We don't need to run it. Because we already ran it when we init this repo
 
 ```bash
