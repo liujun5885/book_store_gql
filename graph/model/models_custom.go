@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/grokify/html-strip-tags-go"
 	"github.com/liujun5885/book_store_gql/constants"
 )
 
@@ -100,8 +101,15 @@ func (b *Book) Reshape() *Book {
 	coverURL := "https://learning.oreilly.com/library/cover/%s/"
 	b.CoverURL = fmt.Sprintf(coverURL, b.CoverURL)
 	b.Type = "book"
-	b.DescriptionTrimmed = b.Description
+	b.DescriptionTrimmed = strip.StripTags(b.Description)
 	return b
+}
+
+func ReshapeBooks(books []*Book) []*Book {
+	for i := 0; i < len(books); i++ {
+		books[i].Reshape()
+	}
+	return books
 }
 
 type User struct {

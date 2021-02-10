@@ -19,11 +19,7 @@ func (o *Book) SearchBooks(keyword string) ([]*model.Book, error) {
 		return nil, err
 	}
 
-	for i := 0; i < len(books); i++ {
-		books[i].Reshape()
-	}
-
-	return books, nil
+	return model.ReshapeBooks(books), nil
 }
 
 func (o *Book) FetchBooksByAuthorID(authorId string) ([]*model.Book, error) {
@@ -33,7 +29,7 @@ func (o *Book) FetchBooksByAuthorID(authorId string) ([]*model.Book, error) {
 	if err != nil {
 		return nil, err
 	}
-	return books, nil
+	return model.ReshapeBooks(books), nil
 }
 
 func (o *Book) FetchBooksByPublisherID(publisherID string) ([]*model.Book, error) {
@@ -43,5 +39,5 @@ func (o *Book) FetchBooksByPublisherID(publisherID string) ([]*model.Book, error
 	if err != nil {
 		return nil, err
 	}
-	return books, nil
+	return model.ReshapeBooks(books), nil
 }
