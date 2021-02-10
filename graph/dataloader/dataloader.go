@@ -12,6 +12,7 @@ func DataLoader(db *pg.DB, next http.Handler) http.Handler {
 			// Put all dataloader in this mapping
 			authorLoaderKey:    BuildAuthorLoader(db),
 			publisherLoaderKey: BuildPublisherLoader(db),
+			topicLoaderKey:     BuildTopicLoader(db),
 		}
 		ctx := request.Context()
 		for k, v := range loaders {

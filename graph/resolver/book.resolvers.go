@@ -5,8 +5,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
-
 	"github.com/liujun5885/book_store_gql/graph/dataloader"
 	"github.com/liujun5885/book_store_gql/graph/generated"
 	"github.com/liujun5885/book_store_gql/graph/model"
@@ -22,7 +20,7 @@ func (r *bookResolver) Publishers(ctx context.Context, obj *model.Book) ([]*mode
 }
 
 func (r *bookResolver) Topics(ctx context.Context, obj *model.Book) ([]*model.Topic, error) {
-	panic(fmt.Errorf("not implemented"))
+	return dataloader.GetTopicLoader(ctx).Load(obj.ID)
 }
 
 func (r *rootQueryResolver) SearchBooks(ctx context.Context, keyword string) ([]*model.Book, error) {
