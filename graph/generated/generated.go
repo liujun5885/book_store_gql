@@ -686,7 +686,7 @@ type Book {
     authors: [Author]
     publishers: [Publisher]
     topics: [Topic]
-    coverURL: String
+    coverURL: String!
     url: String!
     issuedAt: Time!
     createdAt: Time!
@@ -1605,11 +1605,14 @@ func (ec *executionContext) _Book_coverURL(ctx context.Context, field graphql.Co
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Book_url(ctx context.Context, field graphql.CollectedField, obj *model.Book) (ret graphql.Marshaler) {
@@ -4327,6 +4330,9 @@ func (ec *executionContext) _Book(ctx context.Context, sel ast.SelectionSet, obj
 			})
 		case "coverURL":
 			out.Values[i] = ec._Book_coverURL(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "url":
 			out.Values[i] = ec._Book_url(ctx, field, obj)
 			if out.Values[i] == graphql.Null {

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -79,7 +80,7 @@ type Book struct {
 	Language           string    `json:"language"`
 	Rating             int       `json:"rating"`
 	Reviews            int       `json:"reviews"`
-	CoverURL           *string   `json:"coverURL" pg:"-"`
+	CoverURL           string    `json:"coverURL" pg:"safari_book_id"`
 	URL                string    `json:"url"`
 	IssuedAt           time.Time `json:"issuedAt"`
 	CreatedAt          time.Time `json:"createdAt"`
@@ -93,6 +94,14 @@ type Book struct {
 	BookAuthor    *BookAuthor    `json:"-"`
 	BookPublisher *BookPublisher `json:"-"`
 	BookTopic     *BookTopic     `json:"-"`
+}
+
+func (b *Book) Reshape() *Book {
+	coverURL := "https://learning.oreilly.com/library/cover/%s/"
+	b.CoverURL = fmt.Sprintf(coverURL, b.CoverURL)
+	b.Type = "book"
+	b.DescriptionTrimmed = b.Description
+	return b
 }
 
 type User struct {

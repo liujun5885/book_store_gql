@@ -14,7 +14,7 @@ type Book {
     authors: [Author]
     publishers: [Publisher]
     topics: [Topic]
-    coverURL: String
+    coverURL: String!
     url: String!
     issuedAt: Time!
     createdAt: Time!

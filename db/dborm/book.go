@@ -19,6 +19,10 @@ func (o *Book) SearchBooks(keyword string) ([]*model.Book, error) {
 		return nil, err
 	}
 
+	for i := 0; i < len(books); i++ {
+		books[i].Reshape()
+	}
+
 	return books, nil
 }
 
