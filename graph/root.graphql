@@ -3,7 +3,19 @@ schema {
     mutation: RootMutation
 }
 
-scalar Time
-
 type RootQuery
 type RootMutation
+
+scalar Time
+
+type PageInfo {
+    totalItems: Int!
+    totalPages: Int!
+    page: Int!
+    pageSize: Int!
+}
+
+input PageCursor {
+    page: Int!
+    pageSize: Int!
+}

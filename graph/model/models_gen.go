@@ -25,6 +25,18 @@ type LoginResponse struct {
 	User      *User      `json:"user"`
 }
 
+type PageCursor struct {
+	Page     int `json:"page"`
+	PageSize int `json:"pageSize"`
+}
+
+type PageInfo struct {
+	TotalItems int `json:"totalItems"`
+	TotalPages int `json:"totalPages"`
+	Page       int `json:"page"`
+	PageSize   int `json:"pageSize"`
+}
+
 type RegisterInput struct {
 	Email       string  `json:"email"`
 	Password    string  `json:"password"`
@@ -38,6 +50,11 @@ type RegisterResponse struct {
 	Code      RegisterCode `json:"code"`
 	AuthToken *AuthToken   `json:"authToken"`
 	User      *User        `json:"user"`
+}
+
+type SearchBooksResponse struct {
+	PageInfo *PageInfo `json:"pageInfo"`
+	Books    []*Book   `json:"books"`
 }
 
 type LoginCode string

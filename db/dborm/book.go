@@ -11,15 +11,28 @@ type Book struct {
 	DB *pg.DB
 }
 
-func (o *Book) SearchBooks(keyword string) ([]*model.Book, error) {
+func (o *Book) SearchBooks(keyword string, pageCursor model.PageCursor) (*model.SearchBooksResponse, error) {
 	var books []*model.Book
-	err := o.DB.Model(&books).Where("title ILIKE ?", fmt.Sprintf("%%%s%%", keyword)).Select()
+	count, err := o.DB.Model(&books).Where("title ILIKE ?", fmt.Sprintf("%%%s%%", keyword)).Offset(
+		pageCursor.Page * pageCursor.PageSize).Limit(pageCursor.PageSize).SelectAndCount()
 	if err != nil {
-		println("error here")
 		return nil, err
 	}
 
-	return model.ReshapeBooks(books), nil
+	totalPage := count / pageCursor.PageSize
+	if count%pageCursor.PageSize > 0 {
+		totalPage += 1
+	}
+
+	return &model.SearchBooksResponse{
+		PageInfo: &model.PageInfo{
+			TotalItems: count,
+			TotalPages: totalPage,
+			Page:       pageCursor.Page,
+			PageSize:   pageCursor.PageSize,
+		},
+		Books: model.ReshapeBooks(books),
+	}, err
 }
 
 func (o *Book) FetchBooksByAuthorID(authorId string) ([]*model.Book, error) {

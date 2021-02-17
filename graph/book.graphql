@@ -1,5 +1,10 @@
 extend type RootQuery {
-    searchBooks(keyword: String!): [Book]
+    searchBooks(keyword: String!, pageCursor: PageCursor!): SearchBooksResponse
+}
+
+type SearchBooksResponse {
+    pageInfo: PageInfo!
+    books: [Book]
 }
 
 type Book {

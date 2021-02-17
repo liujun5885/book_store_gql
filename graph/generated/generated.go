@@ -89,6 +89,13 @@ type ComplexityRoot struct {
 		User      func(childComplexity int) int
 	}
 
+	PageInfo struct {
+		Page       func(childComplexity int) int
+		PageSize   func(childComplexity int) int
+		TotalItems func(childComplexity int) int
+		TotalPages func(childComplexity int) int
+	}
+
 	Publisher struct {
 		Books       func(childComplexity int) int
 		CreatedAt   func(childComplexity int) int
@@ -112,7 +119,12 @@ type ComplexityRoot struct {
 
 	RootQuery struct {
 		FetchCurrentUser func(childComplexity int) int
-		SearchBooks      func(childComplexity int, keyword string) int
+		SearchBooks      func(childComplexity int, keyword string, pageCursor model.PageCursor) int
+	}
+
+	SearchBooksResponse struct {
+		Books    func(childComplexity int) int
+		PageInfo func(childComplexity int) int
 	}
 
 	Topic struct {
@@ -153,7 +165,7 @@ type RootMutationResolver interface {
 	Login(ctx context.Context, input model.LoginInput) (*model.LoginResponse, error)
 }
 type RootQueryResolver interface {
-	SearchBooks(ctx context.Context, keyword string) ([]*model.Book, error)
+	SearchBooks(ctx context.Context, keyword string, pageCursor model.PageCursor) (*model.SearchBooksResponse, error)
 	FetchCurrentUser(ctx context.Context) (*model.User, error)
 }
 type TopicResolver interface {
@@ -378,6 +390,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.LoginResponse.User(childComplexity), true
 
+	case "PageInfo.page":
+		if e.complexity.PageInfo.Page == nil {
+			break
+		}
+
+		return e.complexity.PageInfo.Page(childComplexity), true
+
+	case "PageInfo.pageSize":
+		if e.complexity.PageInfo.PageSize == nil {
+			break
+		}
+
+		return e.complexity.PageInfo.PageSize(childComplexity), true
+
+	case "PageInfo.totalItems":
+		if e.complexity.PageInfo.TotalItems == nil {
+			break
+		}
+
+		return e.complexity.PageInfo.TotalItems(childComplexity), true
+
+	case "PageInfo.totalPages":
+		if e.complexity.PageInfo.TotalPages == nil {
+			break
+		}
+
+		return e.complexity.PageInfo.TotalPages(childComplexity), true
+
 	case "Publisher.books":
 		if e.complexity.Publisher.Books == nil {
 			break
@@ -489,7 +529,21 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.RootQuery.SearchBooks(childComplexity, args["keyword"].(string)), true
+		return e.complexity.RootQuery.SearchBooks(childComplexity, args["keyword"].(string), args["pageCursor"].(model.PageCursor)), true
+
+	case "SearchBooksResponse.books":
+		if e.complexity.SearchBooksResponse.Books == nil {
+			break
+		}
+
+		return e.complexity.SearchBooksResponse.Books(childComplexity), true
+
+	case "SearchBooksResponse.pageInfo":
+		if e.complexity.SearchBooksResponse.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.SearchBooksResponse.PageInfo(childComplexity), true
 
 	case "Topic.books":
 		if e.complexity.Topic.Books == nil {
@@ -671,7 +725,12 @@ var sources = []*ast.Source{
 }
 `, BuiltIn: false},
 	{Name: "graph/book.graphql", Input: `extend type RootQuery {
-    searchBooks(keyword: String!): [Book]
+    searchBooks(keyword: String!, pageCursor: PageCursor!): SearchBooksResponse
+}
+
+type SearchBooksResponse {
+    pageInfo: PageInfo!
+    books: [Book]
 }
 
 type Book {
@@ -710,10 +769,22 @@ type Publisher {
     mutation: RootMutation
 }
 
-scalar Time
-
 type RootQuery
 type RootMutation
+
+scalar Time
+
+type PageInfo {
+    totalItems: Int!
+    totalPages: Int!
+    page: Int!
+    pageSize: Int!
+}
+
+input PageCursor {
+    page: Int!
+    pageSize: Int!
+}
 `, BuiltIn: false},
 	{Name: "graph/topic.graphql", Input: `type Topic {
     id: ID!
@@ -851,6 +922,15 @@ func (ec *executionContext) field_RootQuery_searchBooks_args(ctx context.Context
 		}
 	}
 	args["keyword"] = arg0
+	var arg1 model.PageCursor
+	if tmp, ok := rawArgs["pageCursor"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pageCursor"))
+		arg1, err = ec.unmarshalNPageCursor2githubᚗcomᚋliujun5885ᚋbook_store_gqlᚋgraphᚋmodelᚐPageCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["pageCursor"] = arg1
 	return args, nil
 }
 
@@ -1889,6 +1969,146 @@ func (ec *executionContext) _LoginResponse_user(ctx context.Context, field graph
 	return ec.marshalOUser2ᚖgithubᚗcomᚋliujun5885ᚋbook_store_gqlᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _PageInfo_totalItems(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PageInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalItems, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PageInfo_totalPages(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PageInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalPages, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PageInfo_page(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PageInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Page, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _PageInfo_pageSize(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "PageInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageSize, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Publisher_id(ctx context.Context, field graphql.CollectedField, obj *model.Publisher) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2333,7 +2553,7 @@ func (ec *executionContext) _RootQuery_searchBooks(ctx context.Context, field gr
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.RootQuery().SearchBooks(rctx, args["keyword"].(string))
+		return ec.resolvers.RootQuery().SearchBooks(rctx, args["keyword"].(string), args["pageCursor"].(model.PageCursor))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2342,9 +2562,9 @@ func (ec *executionContext) _RootQuery_searchBooks(ctx context.Context, field gr
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Book)
+	res := resTmp.(*model.SearchBooksResponse)
 	fc.Result = res
-	return ec.marshalOBook2ᚕᚖgithubᚗcomᚋliujun5885ᚋbook_store_gqlᚋgraphᚋmodelᚐBook(ctx, field.Selections, res)
+	return ec.marshalOSearchBooksResponse2ᚖgithubᚗcomᚋliujun5885ᚋbook_store_gqlᚋgraphᚋmodelᚐSearchBooksResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _RootQuery_fetchCurrentUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2448,6 +2668,73 @@ func (ec *executionContext) _RootQuery___schema(ctx context.Context, field graph
 	res := resTmp.(*introspection.Schema)
 	fc.Result = res
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _SearchBooksResponse_pageInfo(ctx context.Context, field graphql.CollectedField, obj *model.SearchBooksResponse) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "SearchBooksResponse",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2ᚖgithubᚗcomᚋliujun5885ᚋbook_store_gqlᚋgraphᚋmodelᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _SearchBooksResponse_books(ctx context.Context, field graphql.CollectedField, obj *model.SearchBooksResponse) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "SearchBooksResponse",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Books, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Book)
+	fc.Result = res
+	return ec.marshalOBook2ᚕᚖgithubᚗcomᚋliujun5885ᚋbook_store_gqlᚋgraphᚋmodelᚐBook(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Topic_id(ctx context.Context, field graphql.CollectedField, obj *model.Topic) (ret graphql.Marshaler) {
@@ -4081,6 +4368,34 @@ func (ec *executionContext) unmarshalInputLoginInput(ctx context.Context, obj in
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputPageCursor(ctx context.Context, obj interface{}) (model.PageCursor, error) {
+	var it model.PageCursor
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "page":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
+			it.Page, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "pageSize":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pageSize"))
+			it.PageSize, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputRegisterInput(ctx context.Context, obj interface{}) (model.RegisterInput, error) {
 	var it model.RegisterInput
 	var asMap = obj.(map[string]interface{})
@@ -4400,6 +4715,48 @@ func (ec *executionContext) _LoginResponse(ctx context.Context, sel ast.Selectio
 	return out
 }
 
+var pageInfoImplementors = []string{"PageInfo"}
+
+func (ec *executionContext) _PageInfo(ctx context.Context, sel ast.SelectionSet, obj *model.PageInfo) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, pageInfoImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PageInfo")
+		case "totalItems":
+			out.Values[i] = ec._PageInfo_totalItems(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "totalPages":
+			out.Values[i] = ec._PageInfo_totalPages(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "page":
+			out.Values[i] = ec._PageInfo_page(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "pageSize":
+			out.Values[i] = ec._PageInfo_pageSize(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var publisherImplementors = []string{"Publisher"}
 
 func (ec *executionContext) _Publisher(ctx context.Context, sel ast.SelectionSet, obj *model.Publisher) graphql.Marshaler {
@@ -4565,6 +4922,35 @@ func (ec *executionContext) _RootQuery(ctx context.Context, sel ast.SelectionSet
 			out.Values[i] = ec._RootQuery___type(ctx, field)
 		case "__schema":
 			out.Values[i] = ec._RootQuery___schema(ctx, field)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var searchBooksResponseImplementors = []string{"SearchBooksResponse"}
+
+func (ec *executionContext) _SearchBooksResponse(ctx context.Context, sel ast.SelectionSet, obj *model.SearchBooksResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, searchBooksResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SearchBooksResponse")
+		case "pageInfo":
+			out.Values[i] = ec._SearchBooksResponse_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "books":
+			out.Values[i] = ec._SearchBooksResponse_books(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4998,6 +5384,21 @@ func (ec *executionContext) marshalNLoginCode2githubᚗcomᚋliujun5885ᚋbook_s
 func (ec *executionContext) unmarshalNLoginInput2githubᚗcomᚋliujun5885ᚋbook_store_gqlᚋgraphᚋmodelᚐLoginInput(ctx context.Context, v interface{}) (model.LoginInput, error) {
 	res, err := ec.unmarshalInputLoginInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNPageCursor2githubᚗcomᚋliujun5885ᚋbook_store_gqlᚋgraphᚋmodelᚐPageCursor(ctx context.Context, v interface{}) (model.PageCursor, error) {
+	res, err := ec.unmarshalInputPageCursor(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNPageInfo2ᚖgithubᚗcomᚋliujun5885ᚋbook_store_gqlᚋgraphᚋmodelᚐPageInfo(ctx context.Context, sel ast.SelectionSet, v *model.PageInfo) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._PageInfo(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNRegisterCode2githubᚗcomᚋliujun5885ᚋbook_store_gqlᚋgraphᚋmodelᚐRegisterCode(ctx context.Context, v interface{}) (model.RegisterCode, error) {
@@ -5473,6 +5874,13 @@ func (ec *executionContext) marshalORegisterResponse2ᚖgithubᚗcomᚋliujun588
 		return graphql.Null
 	}
 	return ec._RegisterResponse(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOSearchBooksResponse2ᚖgithubᚗcomᚋliujun5885ᚋbook_store_gqlᚋgraphᚋmodelᚐSearchBooksResponse(ctx context.Context, sel ast.SelectionSet, v *model.SearchBooksResponse) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._SearchBooksResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
