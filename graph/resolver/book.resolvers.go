@@ -6,11 +6,11 @@ package resolver
 import (
 	"context"
 	"errors"
+	"github.com/liujun5885/book_store_gql/middleware"
 
 	"github.com/liujun5885/book_store_gql/graph/dataloader"
 	"github.com/liujun5885/book_store_gql/graph/generated"
 	"github.com/liujun5885/book_store_gql/graph/model"
-	"github.com/liujun5885/book_store_gql/middleware"
 )
 
 func (r *bookResolver) Authors(ctx context.Context, obj *model.Book) ([]*model.Author, error) {
@@ -26,6 +26,9 @@ func (r *bookResolver) Topics(ctx context.Context, obj *model.Book) ([]*model.To
 }
 
 func (r *rootQueryResolver) SearchBooks(ctx context.Context, keyword string, pageCursor model.PageCursor) (*model.SearchBooksResponse, error) {
+	if _, err := middleware.GetUserFromCTX(ctx); err != nil {
+		return nil, err
+	}
 
 	if len(keyword) < 2 || len(keyword) > 128 {
 		return nil, errors.New("the length of keywords should be more than 1 and less than 128")
@@ -34,9 +37,6 @@ func (r *rootQueryResolver) SearchBooks(ctx context.Context, keyword string, pag
 		return nil, errors.New("PageSize should be more than 0 and be less than 100, Page cannot be negative")
 	}
 
-	if _, err := middleware.GetUserFromCTX(ctx); err != nil {
-		return nil, err
-	}
 	return r.ORMBooks.SearchBooks(keyword, pageCursor)
 }
 

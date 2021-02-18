@@ -1,6 +1,7 @@
 # book_store_gql
 
 ## Prerequisite
+
 - go-pg package: https://pg.uptrace.dev/
 - gqlgen, the tool we are using to generate graphql server code: https://gqlgen.com/getting-started/
 
@@ -114,3 +115,9 @@ func DataLoader(db *pg.DB, next http.Handler) http.Handler {
 	})
 }
 ```
+
+## referring to
+
+### https://dev.to/glyphack/introduction-to-graphql-server-with-golang-1npk
+
+### https://github.com/99designs/gqlgen/issues/785#issue-465696123
