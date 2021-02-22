@@ -33,8 +33,8 @@ func (r *rootQueryResolver) SearchBooks(ctx context.Context, keyword string, pag
 	if len(keyword) < 2 || len(keyword) > 128 {
 		return nil, errors.New("the length of keywords should be more than 1 and less than 128")
 	}
-	if pageCursor.PageSize <= 0 || pageCursor.PageSize > 100 || pageCursor.Page < 0 {
-		return nil, errors.New("PageSize should be more than 0 and be less than 100, Page cannot be negative")
+	if pageCursor.PageSize <= 0 || pageCursor.PageSize > 100 || pageCursor.Page < 1 {
+		return nil, errors.New("PageSize should be more than 0 and be less than 100, and Page should be more than 1")
 	}
 
 	return r.ORMBooks.SearchBooks(keyword, pageCursor)

@@ -14,7 +14,7 @@ type Book struct {
 func (o *Book) SearchBooks(keyword string, pageCursor model.PageCursor) (*model.SearchBooksResponse, error) {
 	var books []*model.Book
 	count, err := o.DB.Model(&books).Where("title ILIKE ?", fmt.Sprintf("%%%s%%", keyword)).Offset(
-		pageCursor.Page * pageCursor.PageSize).Limit(pageCursor.PageSize).SelectAndCount()
+		(pageCursor.Page - 1) * pageCursor.PageSize).Limit(pageCursor.PageSize).SelectAndCount()
 	if err != nil {
 		return nil, err
 	}
