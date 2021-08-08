@@ -9,22 +9,22 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- create books table
 CREATE TABLE books
 (
-    id             uuid          DEFAULT uuid_generate_v4() NOT NULL primary key,
-    safari_book_id VARCHAR(32)                              NOT NULL,
-    status         smallint      DEFAULT 0                  NOT NULL,
-    reviews        integer       DEFAULT 0                  NOT NULL,
-    rating         integer       DEFAULT 0                  NOT NULL,
-    popularity     integer       DEFAULT 0                  NOT NULL,
-    report_score   integer       DEFAULT 0                  NOT NULL,
-    pages          integer       DEFAULT 0                  NOT NULL,
-    title          text                                     NOT NULL,
-    description    text          DEFAULT ''                 NOT NULL,
-    content        text          DEFAULT ''                 NOT NULL,
-    source         VARCHAR(128)  DEFAULT ''                 NOT NULL,
-    language       VARCHAR(32)   DEFAULT ''                 NOT NULL,
+    id             uuid                        DEFAULT uuid_generate_v4() NOT NULL primary key,
+    safari_book_id VARCHAR(32)                                            NOT NULL,
+    status         smallint                    DEFAULT 0                  NOT NULL,
+    reviews        integer                     DEFAULT 0                  NOT NULL,
+    rating         integer                     DEFAULT 0                  NOT NULL,
+    popularity     integer                     DEFAULT 0                  NOT NULL,
+    report_score   integer                     DEFAULT 0                  NOT NULL,
+    pages          integer                     DEFAULT 0                  NOT NULL,
+    title          text                                                   NOT NULL,
+    description    text                        DEFAULT ''                 NOT NULL,
+    content        text                        DEFAULT ''                 NOT NULL,
+    source         VARCHAR(128)                DEFAULT ''                 NOT NULL,
+    language       VARCHAR(32)                 DEFAULT ''                 NOT NULL,
     tags           VARCHAR(32)[],
-    url            VARCHAR(4096) DEFAULT ''                 NOT NULL,
-    web_url        VARCHAR(4096) DEFAULT ''                 NOT NULL,
+    url            VARCHAR(4096)               DEFAULT ''                 NOT NULL,
+    web_url        VARCHAR(4096)               DEFAULT ''                 NOT NULL,
     created_at     timestamp without time zone DEFAULT timezone('UTC'::text, now()),
     updated_at     timestamp without time zone DEFAULT timezone('UTC'::text, now()),
     issued_at      timestamp without time zone
@@ -37,41 +37,41 @@ CREATE INDEX books__reviews__rating ON books USING btree (reviews, rating);
 -- create authors table
 CREATE TABLE authors
 (
-    id          uuid        DEFAULT uuid_generate_v4() NOT NULL primary key,
-    name        VARCHAR(256)                           NOT NULL,
-    nationality VARCHAR(32) DEFAULT '',
-    description text        DEFAULT '',
+    id          uuid                        DEFAULT uuid_generate_v4() NOT NULL primary key,
+    name        VARCHAR(256)                                           NOT NULL,
+    nationality VARCHAR(32)                 DEFAULT '',
+    description text                        DEFAULT '',
     created_at  timestamp without time zone DEFAULT timezone('UTC'::text, now()),
     updated_at  timestamp without time zone DEFAULT timezone('UTC'::text, now())
 );
 
-CREATE INDEX authors__name ON authors USING btree (lower (name));
+CREATE INDEX authors__name ON authors USING btree (lower(name));
 
 -- create publishers table
 CREATE TABLE publishers
 (
-    id          uuid         DEFAULT uuid_generate_v4() NOT NULL primary key,
-    name        VARCHAR(1024)                           NOT NULL,
-    headquarter VARCHAR(128) DEFAULT '',
-    description text         DEFAULT '',
+    id          uuid                        DEFAULT uuid_generate_v4() NOT NULL primary key,
+    name        VARCHAR(1024)                                          NOT NULL,
+    headquarter VARCHAR(128)                DEFAULT '',
+    description text                        DEFAULT '',
     created_at  timestamp without time zone DEFAULT timezone('UTC'::text, now()),
     updated_at  timestamp without time zone DEFAULT timezone('UTC'::text, now())
 );
 
-CREATE INDEX publisher__name ON publishers USING btree (lower (name));
+CREATE INDEX publisher__name ON publishers USING btree (lower(name));
 
 -- create topics table
 CREATE TABLE topics
 (
-    id         uuid DEFAULT uuid_generate_v4() NOT NULL primary key,
-    name       VARCHAR(256)                    NOT NULL,
-    slug       VARCHAR(256)                    NOT NULL,
+    id         uuid                        DEFAULT uuid_generate_v4() NOT NULL primary key,
+    name       VARCHAR(256)                                           NOT NULL,
+    slug       VARCHAR(256)                                           NOT NULL,
     score      integer,
     created_at timestamp without time zone DEFAULT timezone('UTC'::text, now()),
     updated_at timestamp without time zone DEFAULT timezone('UTC'::text, now()),
     CONSTRAINT slug_unique UNIQUE (slug)
 );
-CREATE INDEX topic__name ON topics USING btree (lower (name));
+CREATE INDEX topic__name ON topics USING btree (lower(name));
 
 -- create book author relation db
 CREATE TABLE book_authors
