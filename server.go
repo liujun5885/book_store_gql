@@ -48,19 +48,22 @@ func loadEnvs() error {
 func main() {
 	if err := loadEnvs(); err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 		return
 	}
 
 	assetConn := db.Conn(&pg.Options{
-		User:     "book_service",
-		Database: "assets",
+		User:     "book_store",
+		Database: "book_store_assets",
+		Password: "aaaaa",
+		Addr:     "localhost:5432",
 	})
 	defer assetConn.Close()
 
 	ugcConn := db.Conn(&pg.Options{
 		User:     "book_service",
-		Database: "ugc",
+		Database: "book_store_ugc",
+		Password: "aaaaa",
+		Addr:     "localhost:5432",
 	})
 	defer ugcConn.Close()
 

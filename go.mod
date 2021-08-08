@@ -9,10 +9,13 @@ require (
 	github.com/go-pg/pg/v9 v9.2.0
 	github.com/google/uuid v1.2.0
 	github.com/grokify/html-strip-tags-go v0.0.1
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.5.0 // indirect
 	github.com/joho/godotenv v1.3.0
 	github.com/pkg/errors v0.8.1
 	github.com/rs/cors v1.6.0
 	github.com/stretchr/testify v1.6.1
 	github.com/vektah/gqlparser/v2 v2.1.0
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
+	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0 // indirect
+	google.golang.org/protobuf v1.27.1 // indirect
 )
