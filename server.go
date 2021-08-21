@@ -60,7 +60,7 @@ func main() {
 	defer assetConn.Close()
 
 	ugcConn := db.Conn(&pg.Options{
-		User:     "book_service",
+		User:     "book_store",
 		Database: "book_store_ugc",
 		Password: "aaaaa",
 		Addr:     "localhost:5432",

@@ -132,25 +132,35 @@ referring to: [Sqitch Tutorial](https://sqitch.org/docs/manual/sqitchtutorial/)
 mkdir -p sqitch/book_store_ugc
 ```
 
-## 2. init sqitch project
+## 2. create user for project
+
+``` postgresql
+CREATE USER book_store PASSWORD 'aaaaa';
+CREATE DATABASE book_store_ugc;
+CREATE DATABASE book_store_assets;
+GRANT ALL on database book_store_ugc to book_store;
+GRANT ALL on database book_store_assets to book_store;
+```
+
+## 3. init sqitch project
 
 ```shell
 sqitch init book_store_ugc --uri  https://github.com/liujun5885/book_store_gql/ --engine pg
 ```
 
-## 3. add sqitch target. I will use local pg for dev, so I created a `local` target.
+## 4. add sqitch target. I will use local pg for dev, so I created a `local` target.
 
 ```shell
 sqitch target add local db:pg://book_store:aaaaa@localhost:5432/book_store_ugc
 ```
 
-## 4. add `local` target to engine `pg`.
+## 5. add `local` target to engine `pg`.
 
 ```shell
 sqitch engine add pg --target local 
 ```
 
-## 5. test it under folder `sqitch/book_store_ugc`
+## 6. test it under folder `sqitch/book_store_ugc`
 
 ```shell
 sqitch deploy
