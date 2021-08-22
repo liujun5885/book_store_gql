@@ -37,12 +37,15 @@ func NewS3Session(region string, bucket string, key string, secret string) (*S3C
 	}, nil
 }
 
+func (s *S3Client) BookIdToS3Key(bookId string) string {
+	return path.Join(s.prefix, fmt.Sprintf("%s.epub", bookId))
+}
+
 func (s *S3Client) GetS3KeyByBookID(bookId string) (string, error) {
-	key := path.Join(s.prefix, fmt.Sprintf("%s.epub", bookId))
 	// Get the first page of results for ListObjectsV2 for a bucket
 	output, err := s.client.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
 		Bucket: aws.String(s.bucket),
-		Prefix: &key,
+		Prefix: aws.String(s.BookIdToS3Key(bookId)),
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -51,4 +54,16 @@ func (s *S3Client) GetS3KeyByBookID(bookId string) (string, error) {
 		return "", nil
 	}
 	return aws.ToString(output.Contents[0].Key), nil
+}
+
+func (s *S3Client) NewSignedGetURL(bookId string) (string, error) {
+	psClient := s3.NewPresignClient(s.client)
+	resp, err := psClient.PresignGetObject(context.TODO(), &s3.GetObjectInput{
+		Bucket: aws.String(s.bucket),
+		Key:    aws.String(s.BookIdToS3Key(bookId)),
+	})
+	if err != nil {
+		return "", err
+	}
+	return resp.URL, nil
 }
