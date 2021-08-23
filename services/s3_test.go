@@ -59,7 +59,7 @@ func TestNewSignedGetURL(t *testing.T) {
 		return
 	}
 
-	bookId := "01120100011SI"
+	bookId := "0028636120"
 	url, err := s3.NewSignedGetURL(bookId)
 	if err != nil {
 		t.Errorf("failed to get key for book %s!, error: %v", bookId, err)

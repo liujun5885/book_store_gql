@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"log"
 	"path"
+	"time"
 )
 
 type S3Client struct {
@@ -61,6 +62,8 @@ func (s *S3Client) NewSignedGetURL(bookId string) (string, error) {
 	resp, err := psClient.PresignGetObject(context.TODO(), &s3.GetObjectInput{
 		Bucket: aws.String(s.bucket),
 		Key:    aws.String(s.BookIdToS3Key(bookId)),
+	}, func(option *s3.PresignOptions) {
+		option.Expires = 5 * time.Minute
 	})
 	if err != nil {
 		return "", err

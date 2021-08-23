@@ -1,10 +1,15 @@
 extend type RootQuery {
     searchBooks(keyword: String!, pageCursor: PageCursor!): SearchBooksResponse
+    generateBookPresignObject(id: String!):BookPresignObject
 }
 
 type SearchBooksResponse {
     pageInfo: PageInfo!
     books: [Book]
+}
+
+type BookPresignObject {
+    presignedUrl: String!
 }
 
 type Book {
