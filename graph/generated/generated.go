@@ -83,6 +83,10 @@ type ComplexityRoot struct {
 		UpdatedAt          func(childComplexity int) int
 	}
 
+	BookPresignObject struct {
+		PresignedURL func(childComplexity int) int
+	}
+
 	LoginResponse struct {
 		AuthToken func(childComplexity int) int
 		Code      func(childComplexity int) int
@@ -118,8 +122,9 @@ type ComplexityRoot struct {
 	}
 
 	RootQuery struct {
-		FetchCurrentUser func(childComplexity int) int
-		SearchBooks      func(childComplexity int, keyword string, pageCursor model.PageCursor) int
+		FetchCurrentUser          func(childComplexity int) int
+		GenerateBookPresignObject func(childComplexity int, id string) int
+		SearchBooks               func(childComplexity int, keyword string, pageCursor model.PageCursor) int
 	}
 
 	SearchBooksResponse struct {
@@ -166,6 +171,7 @@ type RootMutationResolver interface {
 }
 type RootQueryResolver interface {
 	SearchBooks(ctx context.Context, keyword string, pageCursor model.PageCursor) (*model.SearchBooksResponse, error)
+	GenerateBookPresignObject(ctx context.Context, id string) (*model.BookPresignObject, error)
 	FetchCurrentUser(ctx context.Context) (*model.User, error)
 }
 type TopicResolver interface {
@@ -369,6 +375,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Book.UpdatedAt(childComplexity), true
 
+	case "BookPresignObject.presignedUrl":
+		if e.complexity.BookPresignObject.PresignedURL == nil {
+			break
+		}
+
+		return e.complexity.BookPresignObject.PresignedURL(childComplexity), true
+
 	case "LoginResponse.authToken":
 		if e.complexity.LoginResponse.AuthToken == nil {
 			break
@@ -518,6 +531,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.RootQuery.FetchCurrentUser(childComplexity), true
+
+	case "RootQuery.generateBookPresignObject":
+		if e.complexity.RootQuery.GenerateBookPresignObject == nil {
+			break
+		}
+
+		args, err := ec.field_RootQuery_generateBookPresignObject_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.RootQuery.GenerateBookPresignObject(childComplexity, args["id"].(string)), true
 
 	case "RootQuery.searchBooks":
 		if e.complexity.RootQuery.SearchBooks == nil {
@@ -726,11 +751,16 @@ var sources = []*ast.Source{
 `, BuiltIn: false},
 	{Name: "graph/book.graphql", Input: `extend type RootQuery {
     searchBooks(keyword: String!, pageCursor: PageCursor!): SearchBooksResponse
+    generateBookPresignObject(id: String!):BookPresignObject
 }
 
 type SearchBooksResponse {
     pageInfo: PageInfo!
     books: [Book]
+}
+
+type BookPresignObject {
+    presignedUrl: String!
 }
 
 type Book {
@@ -907,6 +937,21 @@ func (ec *executionContext) field_RootQuery___type_args(ctx context.Context, raw
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_RootQuery_generateBookPresignObject_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -1870,6 +1915,41 @@ func (ec *executionContext) _Book_type(ctx context.Context, field graphql.Collec
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _BookPresignObject_presignedUrl(ctx context.Context, field graphql.CollectedField, obj *model.BookPresignObject) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "BookPresignObject",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PresignedURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _LoginResponse_authToken(ctx context.Context, field graphql.CollectedField, obj *model.LoginResponse) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2565,6 +2645,45 @@ func (ec *executionContext) _RootQuery_searchBooks(ctx context.Context, field gr
 	res := resTmp.(*model.SearchBooksResponse)
 	fc.Result = res
 	return ec.marshalOSearchBooksResponse2ᚖgithubᚗcomᚋliujun5885ᚋbook_store_gqlᚋgraphᚋmodelᚐSearchBooksResponse(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RootQuery_generateBookPresignObject(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RootQuery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_RootQuery_generateBookPresignObject_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.RootQuery().GenerateBookPresignObject(rctx, args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.BookPresignObject)
+	fc.Result = res
+	return ec.marshalOBookPresignObject2ᚖgithubᚗcomᚋliujun5885ᚋbook_store_gqlᚋgraphᚋmodelᚐBookPresignObject(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _RootQuery_fetchCurrentUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4684,6 +4803,33 @@ func (ec *executionContext) _Book(ctx context.Context, sel ast.SelectionSet, obj
 	return out
 }
 
+var bookPresignObjectImplementors = []string{"BookPresignObject"}
+
+func (ec *executionContext) _BookPresignObject(ctx context.Context, sel ast.SelectionSet, obj *model.BookPresignObject) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, bookPresignObjectImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BookPresignObject")
+		case "presignedUrl":
+			out.Values[i] = ec._BookPresignObject_presignedUrl(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var loginResponseImplementors = []string{"LoginResponse"}
 
 func (ec *executionContext) _LoginResponse(ctx context.Context, sel ast.SelectionSet, obj *model.LoginResponse) graphql.Marshaler {
@@ -4905,6 +5051,17 @@ func (ec *executionContext) _RootQuery(ctx context.Context, sel ast.SelectionSet
 					}
 				}()
 				res = ec._RootQuery_searchBooks(ctx, field)
+				return res
+			})
+		case "generateBookPresignObject":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._RootQuery_generateBookPresignObject(ctx, field)
 				return res
 			})
 		case "fetchCurrentUser":
@@ -5774,6 +5931,13 @@ func (ec *executionContext) marshalOBook2ᚖgithubᚗcomᚋliujun5885ᚋbook_sto
 		return graphql.Null
 	}
 	return ec._Book(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOBookPresignObject2ᚖgithubᚗcomᚋliujun5885ᚋbook_store_gqlᚋgraphᚋmodelᚐBookPresignObject(ctx context.Context, sel ast.SelectionSet, v *model.BookPresignObject) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._BookPresignObject(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {

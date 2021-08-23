@@ -6,11 +6,10 @@ package resolver
 import (
 	"context"
 	"errors"
-	"github.com/liujun5885/book_store_gql/middleware"
-
 	"github.com/liujun5885/book_store_gql/graph/dataloader"
 	"github.com/liujun5885/book_store_gql/graph/generated"
 	"github.com/liujun5885/book_store_gql/graph/model"
+	"github.com/liujun5885/book_store_gql/middleware"
 )
 
 func (r *bookResolver) Authors(ctx context.Context, obj *model.Book) ([]*model.Author, error) {
@@ -38,6 +37,22 @@ func (r *rootQueryResolver) SearchBooks(ctx context.Context, keyword string, pag
 	}
 
 	return r.ORMBooks.SearchBooks(keyword, pageCursor)
+}
+
+func (r *rootQueryResolver) GenerateBookPresignObject(ctx context.Context, id string) (*model.BookPresignObject, error) {
+	//if _, err := middleware.GetUserFromCTX(ctx); err != nil {
+	//	return nil, err
+	//}
+
+	book, err := r.ORMBooks.FetchBooksByID(id)
+	if err != nil {
+		return nil, err
+	}
+	url, err := r.S3Client.NewSignedGetURL(book.CoverURL)
+	if err != nil {
+		return nil, err
+	}
+	return &model.BookPresignObject{PresignedURL: url}, err
 }
 
 // Book returns generated.BookResolver implementation.

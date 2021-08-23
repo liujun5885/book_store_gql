@@ -14,6 +14,10 @@ type AuthToken struct {
 	Expiration  time.Time `json:"expiration"`
 }
 
+type BookPresignObject struct {
+	PresignedURL string `json:"presignedUrl"`
+}
+
 type LoginInput struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`

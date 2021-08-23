@@ -54,3 +54,15 @@ func (o *Book) FetchBooksByPublisherID(publisherID string) ([]*model.Book, error
 	}
 	return model.ReshapeBooks(books), nil
 }
+
+func (o *Book) FetchBooksByID(id string) (*model.Book, error) {
+	var books []*model.Book
+	err := o.DB.Model(&books).Where("id = ?", id).Select()
+	if err != nil {
+		return nil, err
+	}
+	if len(books) == 0 {
+		return nil, nil
+	}
+	return books[0], nil
+}

@@ -5,7 +5,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/liujun5885/book_store_gql/graph/dataloader"
 	"log"
 	"net/http"
 	"os"
@@ -21,9 +20,11 @@ import (
 	"github.com/liujun5885/book_store_gql/constants"
 	"github.com/liujun5885/book_store_gql/db"
 	"github.com/liujun5885/book_store_gql/db/dborm"
+	"github.com/liujun5885/book_store_gql/graph/dataloader"
 	"github.com/liujun5885/book_store_gql/graph/generated"
 	"github.com/liujun5885/book_store_gql/graph/resolver"
 	MyMiddleware "github.com/liujun5885/book_store_gql/middleware"
+	"github.com/liujun5885/book_store_gql/services"
 )
 
 const defaultPort = "8000"
@@ -82,11 +83,20 @@ func main() {
 	router.Use(middleware.Logger)
 	router.Use(MyMiddleware.AuthMiddleware(ugcConn))
 
+	s3Client, err := services.NewS3Session(
+		"us-east-1", "all-ebook-bucket", constants.S3AccessKey, constants.S3AssessSecret,
+	)
+	if err != nil {
+		log.Printf("Failed to init S3 Session, err: %v", err)
+		return
+	}
+
 	config := generated.Config{Resolvers: &resolver.Resolver{
 		ORMBooks:     dborm.Book{DB: assetConn},
 		ORMPublisher: dborm.Publisher{DB: assetConn},
 		ORMAuthor:    dborm.Author{DB: assetConn},
 		ORMUser:      dborm.User{DB: ugcConn},
+		S3Client:     s3Client,
 	}}
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(config))
