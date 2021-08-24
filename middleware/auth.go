@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"context"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
 	"github.com/go-pg/pg/v9"
@@ -37,7 +36,6 @@ func AuthMiddleware(db *pg.DB) func(handler http.Handler) http.Handler {
 				next.ServeHTTP(writer, request)
 				return
 			}
-			fmt.Println(user.ID)
 			ctx := context.WithValue(request.Context(), CurrentUserKey, user)
 			next.ServeHTTP(writer, request.WithContext(ctx))
 		})
@@ -72,14 +70,14 @@ func parseToken(r *http.Request) (*jwt.Token, error) {
 }
 
 func GetUserFromCTX(ctx context.Context) (*model.User, error) {
-	errNoUser := errors.New("no user in context")
+	errUnauthorized := errors.New("Unauthorized")
 	userValue := ctx.Value(CurrentUserKey)
 	if userValue == nil {
-		return nil, errNoUser
+		return nil, errUnauthorized
 	}
 	user, ok := userValue.(*model.User)
 	if !ok || user.ID == "" {
-		return nil, errNoUser
+		return nil, errUnauthorized
 	}
 	return user, nil
 }

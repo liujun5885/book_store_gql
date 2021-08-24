@@ -40,9 +40,9 @@ func (r *rootQueryResolver) SearchBooks(ctx context.Context, keyword string, pag
 }
 
 func (r *rootQueryResolver) GenerateBookPresignObject(ctx context.Context, id string) (*model.BookPresignObject, error) {
-	//if _, err := middleware.GetUserFromCTX(ctx); err != nil {
-	//	return nil, err
-	//}
+	if _, err := middleware.GetUserFromCTX(ctx); err != nil {
+		return nil, err
+	}
 
 	book, err := r.ORMBooks.FetchBooksByID(id)
 	if err != nil {
