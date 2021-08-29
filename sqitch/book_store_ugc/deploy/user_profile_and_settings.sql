@@ -4,7 +4,7 @@ BEGIN;
 
 CREATE TABLE user_profiles
 (
-    user_id  UUID REFERENCES users ON DELETE CASCADE,
+    user_id  UUID UNIQUE REFERENCES users ON DELETE CASCADE,
     address  VARCHAR(1024) NOT NULL DEFAULT '',
     city     VARCHAR(256)  NOT NULL DEFAULT '',
     province VARCHAR(256)  NOT NULL DEFAULT '',
@@ -15,7 +15,7 @@ CREATE TABLE user_profiles
 
 CREATE TABLE user_settings
 (
-    user_id        UUID REFERENCES users ON DELETE CASCADE,
+    user_id        UUID UNIQUE REFERENCES users ON DELETE CASCADE,
     kindle_account VARCHAR(256) NOT NULL DEFAULT ''
 );
 

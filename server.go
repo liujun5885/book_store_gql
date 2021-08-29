@@ -5,6 +5,8 @@ package main
 import (
 	"errors"
 	"fmt"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"os"
@@ -60,13 +62,12 @@ func main() {
 	})
 	defer assetConn.Close()
 
-	ugcConn := db.Conn(&pg.Options{
-		User:     "book_store",
-		Database: "book_store_ugc",
-		Password: "aaaaa",
-		Addr:     "localhost:5432",
-	})
-	defer ugcConn.Close()
+	dsn := "host=localhost port=5432 user=book_store password=aaaaa dbname=book_store_ugc sslmode=disable TimeZone=Asia/Shanghai"
+	ugcConn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 
 	port := os.Getenv("PORT")
 	if port == "" {

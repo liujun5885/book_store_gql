@@ -7,7 +7,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
 	"github.com/liujun5885/book_store_gql/graph/generated"
 	"github.com/liujun5885/book_store_gql/graph/model"
 	"github.com/liujun5885/book_store_gql/middleware"
@@ -61,7 +60,53 @@ func (r *rootMutationResolver) Login(ctx context.Context, input model.LoginInput
 }
 
 func (r *rootMutationResolver) UpdateUser(ctx context.Context, input model.UpdateUserInput) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	user, err := middleware.GetUserFromCTX(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if input.Basic != nil {
+		user.PhoneNumber = input.Basic.PhoneNumber
+		user.FirstName = input.Basic.FirstName
+		user.LastName = input.Basic.LastName
+		if _, err := r.ORMUser.UpdateUser(user); err != nil {
+			return nil, err
+		}
+	}
+
+	if input.Profile != nil {
+		profile := &model.UserProfile{
+			UserID:   user.ID,
+			Address:  input.Profile.Address,
+			City:     input.Profile.City,
+			Province: input.Profile.Province,
+			Country:  input.Profile.Country,
+			Job:      input.Profile.Job,
+			School:   input.Profile.School,
+		}
+		if _, err := r.ORMUser.UpdateUserProfiles(profile); err != nil {
+			return nil, err
+		}
+	}
+
+	if input.Settings != nil {
+		settings := &model.UserSettings{
+			UserID:        user.ID,
+			KindleAccount: input.Settings.KindleAccount,
+		}
+		if _, err := r.ORMUser.UpdateUserSettings(settings); err != nil {
+			return nil, err
+		}
+	}
+	user.Profile, err = r.ORMUser.FetchProfilesByUserID(&user.ID)
+	if err != nil {
+		return nil, err
+	}
+	user.Settings, err = r.ORMUser.FetchSettingsByUserID(&user.ID)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func (r *rootQueryResolver) FetchCurrentUser(ctx context.Context) (*model.User, error) {
@@ -73,11 +118,29 @@ func (r *rootQueryResolver) FetchCurrentUser(ctx context.Context) (*model.User, 
 }
 
 func (r *userResolver) Profile(ctx context.Context, obj *model.User) (*model.UserProfile, error) {
-	panic(fmt.Errorf("not implemented"))
+	user, err := middleware.GetUserFromCTX(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	profile, err := r.ORMUser.FetchProfilesByUserID(&user.ID)
+	if err != nil {
+		return nil, err
+	}
+	return profile, nil
 }
 
 func (r *userResolver) Settings(ctx context.Context, obj *model.User) (*model.UserSettings, error) {
-	panic(fmt.Errorf("not implemented"))
+	user, err := middleware.GetUserFromCTX(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	settings, err := r.ORMUser.FetchSettingsByUserID(&user.ID)
+	if err != nil {
+		return nil, err
+	}
+	return settings, nil
 }
 
 // User returns generated.UserResolver implementation.

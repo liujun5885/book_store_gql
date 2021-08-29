@@ -95,7 +95,7 @@ type UserProfileInput struct {
 
 type UserSettings struct {
 	UserID        string  `json:"userID"`
-	KindleAccount *string `json:"kindleAccount"`
+	KindleAccount *string `json:"kindleAccount" gorm:"column:kindle_account"`
 }
 
 type UserSettingsInput struct {

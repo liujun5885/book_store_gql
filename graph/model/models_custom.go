@@ -113,15 +113,17 @@ func ReshapeBooks(books []*Book) []*Book {
 }
 
 type User struct {
-	ID          string     `json:"id"`
-	Email       string     `json:"email"`
-	Password    string     `json:"-"`
-	PhoneNumber string     `json:"phoneNumber"`
-	FirstName   string     `json:"firstName"`
-	LastName    string     `json:"lastName"`
-	Verified    bool       `json:"verified"`
-	CreatedAt   time.Time  `json:"createdAt"`
-	LastLogin   *time.Time `json:"lastLogin"`
+	ID          string        `json:"id"`
+	Email       string        `json:"email"`
+	Password    string        `json:"-"`
+	PhoneNumber string        `json:"phoneNumber"`
+	FirstName   string        `json:"firstName"`
+	LastName    string        `json:"lastName"`
+	Verified    bool          `json:"verified"`
+	CreatedAt   time.Time     `json:"createdAt"`
+	LastLogin   *time.Time    `json:"lastLogin"`
+	Profile     *UserProfile  `json:"-"`
+	Settings    *UserSettings `json:"-"`
 }
 
 func (u *User) GenToken() (*AuthToken, error) {

@@ -4,11 +4,11 @@ import (
 	"context"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
-	"github.com/go-pg/pg/v9"
 	"github.com/liujun5885/book_store_gql/constants"
 	"github.com/liujun5885/book_store_gql/db/dborm"
 	"github.com/liujun5885/book_store_gql/graph/model"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 	"net/http"
 	"os"
 	"strings"
@@ -16,7 +16,7 @@ import (
 
 var CurrentUserKey = "UserKey"
 
-func AuthMiddleware(db *pg.DB) func(handler http.Handler) http.Handler {
+func AuthMiddleware(db *gorm.DB) func(handler http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 			token, err := parseToken(request)
