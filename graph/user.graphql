@@ -5,6 +5,7 @@ extend type RootQuery {
 extend type RootMutation {
     register(input: RegisterInput!): RegisterResponse
     login(input: LoginInput!): LoginResponse
+    updateUser(input: UpdateUserInput!): User
 }
 
 type AuthToken {
@@ -44,6 +45,23 @@ type User {
     verified: Boolean!
     createdAt: Time!
     lastLogin: Time
+    profile: UserProfile
+    settings: UserSettings
+}
+
+type UserProfile {
+    userID: ID!
+    address: String
+    city: String
+    province: String
+    country: String
+    job: String
+    school: String
+}
+
+type UserSettings {
+    userID: ID!
+    kindleAccount: String
 }
 
 input RegisterInput {
@@ -59,3 +77,30 @@ input LoginInput {
     email: String!
     password: String!
 }
+
+input UserBasicInput {
+    email: String!
+    phoneNumber: String!
+    firstName: String!
+    lastName: String!
+}
+
+input UserProfileInput {
+    address: String
+    city: String
+    province: String
+    country: String
+    job: String
+    school: String
+}
+
+input UserSettingsInput {
+    kindleAccount: String
+}
+
+input UpdateUserInput {
+    basic: UserBasicInput
+    profile: UserProfileInput
+    settings: UserSettingsInput
+}
+
