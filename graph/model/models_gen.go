@@ -61,6 +61,47 @@ type SearchBooksResponse struct {
 	Books    []*Book   `json:"books"`
 }
 
+type UpdateUserInput struct {
+	Basic    *UserBasicInput    `json:"basic"`
+	Profile  *UserProfileInput  `json:"profile"`
+	Settings *UserSettingsInput `json:"settings"`
+}
+
+type UserBasicInput struct {
+	Email       string `json:"email"`
+	PhoneNumber string `json:"phoneNumber"`
+	FirstName   string `json:"firstName"`
+	LastName    string `json:"lastName"`
+}
+
+type UserProfile struct {
+	UserID   string  `json:"userID"`
+	Address  *string `json:"address"`
+	City     *string `json:"city"`
+	Province *string `json:"province"`
+	Country  *string `json:"country"`
+	Job      *string `json:"job"`
+	School   *string `json:"school"`
+}
+
+type UserProfileInput struct {
+	Address  *string `json:"address"`
+	City     *string `json:"city"`
+	Province *string `json:"province"`
+	Country  *string `json:"country"`
+	Job      *string `json:"job"`
+	School   *string `json:"school"`
+}
+
+type UserSettings struct {
+	UserID        string  `json:"userID"`
+	KindleAccount *string `json:"kindleAccount"`
+}
+
+type UserSettingsInput struct {
+	KindleAccount *string `json:"kindleAccount"`
+}
+
 type LoginCode string
 
 const (

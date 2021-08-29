@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/liujun5885/book_store_gql/graph/generated"
 	"github.com/liujun5885/book_store_gql/graph/model"
 	"github.com/liujun5885/book_store_gql/middleware"
 )
@@ -59,6 +60,10 @@ func (r *rootMutationResolver) Login(ctx context.Context, input model.LoginInput
 	return response, nil
 }
 
+func (r *rootMutationResolver) UpdateUser(ctx context.Context, input model.UpdateUserInput) (*model.User, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *rootQueryResolver) FetchCurrentUser(ctx context.Context) (*model.User, error) {
 	user, err := middleware.GetUserFromCTX(ctx)
 	if err != nil {
@@ -66,3 +71,16 @@ func (r *rootQueryResolver) FetchCurrentUser(ctx context.Context) (*model.User, 
 	}
 	return user, nil
 }
+
+func (r *userResolver) Profile(ctx context.Context, obj *model.User) (*model.UserProfile, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *userResolver) Settings(ctx context.Context, obj *model.User) (*model.UserSettings, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+// User returns generated.UserResolver implementation.
+func (r *Resolver) User() generated.UserResolver { return &userResolver{r} }
+
+type userResolver struct{ *Resolver }
