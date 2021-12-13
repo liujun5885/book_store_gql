@@ -13,18 +13,43 @@ go run github.com/99designs/gqlgen init
 
 ## How to add your graphQL Model
 
-### Add model in file `graph/topic.graphql`
+### Add model in file `graph/book.graphql`
 
 ```graphql
-type Topic {
-    id: ID!
-    name: String!
-    slug: String!
-    score: Int
-    createdAt: Time!
-    updatedAt: Time!
+extend type RootQuery {
+    searchBooks(keyword: String!, pageCursor: PageCursor!): SearchBooksResponse
+    generateBookPresignObject(id: String!):BookPresignObject
+}
+
+type SearchBooksResponse {
+    pageInfo: PageInfo!
     books: [Book]
 }
+
+type BookPresignObject {
+    presignedUrl: String!
+}
+
+type Book {
+    id: ID!
+    title: String!
+    description: String!
+    descriptionTrimmed: String!
+    pages: Int!
+    language: String!
+    rating: Int!
+    reviews: Int!
+    authors: [Author]
+    publishers: [Publisher]
+    topics: [Topic]
+    coverURL: String!
+    url: String!
+    issuedAt: Time!
+    createdAt: Time!
+    updatedAt: Time!
+    type: String!
+}
+
 ```
 
 ### run command to generate code
@@ -35,13 +60,13 @@ go generate ./...
 
 ### all generated fill will go to folder `graph`
 
-### all `topic` resolvers will goto `topic.resolvers.go`. You need to implement it yourself
+### all `books` resolvers will goto `resolver/book.resolvers.go`. You need to implement it yourself
 
 #### for example:
 
 ```
-func (r *topicResolver) Books(ctx context.Context, obj *model.Topic) ([]*model.Book, error) {
-// write your code here
+func (r *rootQueryResolver) SearchBooks(ctx context.Context, keyword string, pageCursor model.PageCursor) (*model.SearchBooksResponse, error) {
+    // do something here.
 }
 ```
 
